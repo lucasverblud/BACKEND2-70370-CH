@@ -5,10 +5,16 @@ import initializePassport from "./config/passport.config.js";
 import userRoutes from './routes/users.routes.js'
 import sessionRoutes from './routes/sessions.routes.js';
 import connectDb from "./config/database.js";
+import viewRoutes from './routes/views.routes.js'
+import { engine } from "express-handlebars";
+
 //settings
 const app = express();
 app.set("PORT", 3000);
 const uri = "mongodb+srv://lucasverblud:ucfWJpJhHT1Vx11P@cluster0.mnycb.mongodb.net/backend2";
+app.engine("handlebars", engine());
+app.set("view engine", "handlebars");
+app.set("views", "./src/views");
 // middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -25,6 +31,7 @@ app.get("/", (req, res) => {
 app.use("/api/sessions", sessionRoutes);
 // Usar el enrutador
 app.use('/api/users', userRoutes); // Esto asegura que todas las rutas de users.routes.js se sirvan bajo /api/users
+app.use('/', viewRoutes)
 //listeners
 connectDb(uri);
 app.listen(app.get("PORT"), () => {

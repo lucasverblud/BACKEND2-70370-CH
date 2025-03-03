@@ -1,6 +1,6 @@
 import passport from "passport";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
-import userModel from "../models/user.model.js";
+import userModel from "../daos/models/user.model.js";
 
 const cookieExtractor = (req) => {
   let token = null;

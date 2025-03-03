@@ -1,34 +1,39 @@
 import express from "express";
 import passport from "passport";
-import userModel from "../models/user.model.js";
+import UserRepository from "../repositories/user.repository.js";
+import UserDAO from "../daos/user.dao.js";
+import UserDTO from "../dtos/user.dto.js";
 import { hashPassword } from "../utils/index.js";
 
 const router = express.Router();
+const userRepository = new UserRepository(new UserDAO());
 
 // Ruta para registrar un usuario
 router.post("/register", async (req, res) => {
-  const { first_name, last_name, email, age, password } = req.body;
+  const { first_name, last_name, email, age, password, role } = req.body;
 
   try {
-    const existingUser = await userModel.findOne({ email });
+    // Validar email
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      return res.status(400).json({ message: "Por favor ingresa un email válido" });
+    }
+
+    // Verificar si el usuario ya existe
+    const existingUser = await userRepository.getUserByEmail(email);
     if (existingUser) {
       return res.status(400).json({ message: "El email ya está registrado" });
     }
 
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      return res.status(400).json({ message: "Por favor ingresa un email válido" });
-    }
-    
-    const newUser = new userModel({
+    // Crear usuario con contraseña hasheada
+    const newUser = await userRepository.createUser({
       first_name,
       last_name,
       email,
       age,
       password: hashPassword(password),
-      role: "user",
+      role: role || "user",
     });
 
-    await newUser.save();
     res.status(201).json({ message: "Usuario creado exitosamente", user: { email: newUser.email } });
   } catch (error) {
     console.error(error);
@@ -36,18 +41,15 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Ruta para obtener el usuario actual usando Passport
+// Ruta para obtener el usuario actual usando Passport y DTO
 router.get(
   "/current",
   passport.authenticate("current", { session: false }),
-  (req, res) => {
+  async (req, res) => {
     if (!req.user) return res.status(401).json({ message: "No autorizado" });
 
-    // Eliminar el campo password
-    req.user.password = undefined;
-
-    // Devolver el usuario sin el campo password
-    res.json(req.user);
+    const userDTO = new UserDTO(req.user); // Aplicamos el DTO
+    res.json(userDTO);
   }
 );
 

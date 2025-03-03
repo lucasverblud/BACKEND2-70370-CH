@@ -7,6 +7,8 @@ import sessionRoutes from './routes/sessions.routes.js';
 import connectDb from "./config/database.js";
 import viewRoutes from './routes/views.routes.js'
 import { engine } from "express-handlebars";
+import ticketRoutes from "./routes/ticket.routes.js";
+import productRoutes from "./routes/product.routes.js";
 
 //settings
 const app = express();
@@ -29,6 +31,9 @@ app.get("/", (req, res) => {
 });
 // Rutas de sesión bajo "/api/sessions"
 app.use("/api/sessions", sessionRoutes);
+// Agregamos la ruta de tickets
+app.use("/api/tickets", ticketRoutes);
+app.use("/api/products", productRoutes);
 // Usar el enrutador
 app.use('/api/users', userRoutes); // Esto asegura que todas las rutas de users.routes.js se sirvan bajo /api/users
 app.use('/', viewRoutes)

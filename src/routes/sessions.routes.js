@@ -1,7 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import { isValidPassword } from "../utils/index.js";
-import userModel from "../models/user.model.js";
+import userModel from "../daos/models/user.model.js";
 
 const router = express.Router();
 

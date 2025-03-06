@@ -1,44 +1,52 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import passport from "passport";
+import dotenv from "dotenv";
 import initializePassport from "./config/passport.config.js";
-import userRoutes from './routes/users.routes.js'
-import sessionRoutes from './routes/sessions.routes.js';
+import userRoutes from "./routes/users.routes.js";
+import sessionRoutes from "./routes/sessions.routes.js";
 import connectDb from "./config/database.js";
-import viewRoutes from './routes/views.routes.js'
-import { engine } from "express-handlebars";
 import ticketRoutes from "./routes/ticket.routes.js";
 import productRoutes from "./routes/product.routes.js";
+// import viewRoutes from "./routes/views.routes.js";
 
-//settings
+// Cargar variables de entorno
+dotenv.config();
+
+// Configuración del servidor
 const app = express();
-app.set("PORT", 3000);
-const uri = "mongodb+srv://lucasverblud:ucfWJpJhHT1Vx11P@cluster0.mnycb.mongodb.net/backend2";
-app.engine("handlebars", engine());
-app.set("view engine", "handlebars");
-app.set("views", "./src/views");
-// middlewares
+const PORT = process.env.PORT || 3000;
+
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-//passport
+
+// Passport
 initializePassport();
 app.use(passport.initialize());
-// app.use(passport.session());
-//routes
+
+// Rutas
 app.get("/", (req, res) => {
   res.json({ title: "Home Page" });
 });
-// Rutas de sesión bajo "/api/sessions"
 app.use("/api/sessions", sessionRoutes);
-// Agregamos la ruta de tickets
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/products", productRoutes);
-// Usar el enrutador
-app.use('/api/users', userRoutes); // Esto asegura que todas las rutas de users.routes.js se sirvan bajo /api/users
-app.use('/', viewRoutes)
-//listeners
-connectDb(uri);
-app.listen(app.get("PORT"), () => {
-  console.log(`Server on port ${app.get("PORT")}`);
+app.use("/api/users", userRoutes);
+
+/* 
+import { engine } from "express-handlebars";
+app.engine("handlebars", engine());
+app.set("view engine", "handlebars");
+app.set("views", "./src/views");
+app.use("/", viewRoutes);
+*/
+
+// Conectar a la base de datos
+connectDb(process.env.MONGO_URI);
+
+// Iniciar servidor
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

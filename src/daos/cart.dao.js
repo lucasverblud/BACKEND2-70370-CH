@@ -21,6 +21,11 @@ export default class CartDAO {
       for (const item of cart.products) {
         const product = await productModel.findById(item.product._id);
 
+        if (!product) {
+          productsNotPurchased.push(item);
+          continue;
+        }
+
         if (product.stock >= item.quantity) {
           product.stock -= item.quantity;
           totalAmount += product.price * item.quantity;
@@ -44,7 +49,7 @@ export default class CartDAO {
 
       return { success: false, remainingProducts: productsNotPurchased };
     } catch (error) {
-      console.error("Error en la compra:", error);
+      console.error("❌ Error en la compra:", error);
       return { error: "Error al procesar la compra" };
     }
   }

@@ -20,6 +20,7 @@ export const createTicket = async (req, res) => {
 
     res.status(201).json({ message: "Ticket creado con éxito", ticket: newTicket });
   } catch (error) {
+    console.error("❌ Error al crear ticket:", error);
     res.status(500).json({ message: "Error al crear el ticket", error });
   }
 };

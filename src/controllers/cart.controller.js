@@ -10,7 +10,11 @@ const ticketRepository = new TicketRepository(new TicketDAO());
 export const purchaseCart = async (req, res) => {
   try {
     const { cid } = req.params;
-    const userEmail = req.user.email;
+    const userEmail = req.user?.email; // Aseguramos que `req.user` esté definido
+
+    if (!userEmail) {
+      return res.status(401).json({ message: "Usuario no autenticado" });
+    }
 
     const purchaseResult = await cartRepository.purchaseCart(cid, userEmail);
 
@@ -18,7 +22,7 @@ export const purchaseCart = async (req, res) => {
       return res.status(400).json({ message: purchaseResult.error });
     }
 
-    // Crear el ticket si hubo productos comprados
+    // Si se compraron productos, generamos el ticket
     if (purchaseResult.success) {
       const newTicket = await ticketRepository.createTicket({
         code: uuidv4(),
@@ -26,21 +30,23 @@ export const purchaseCart = async (req, res) => {
         purchaser: purchaseResult.ticketData.purchaser,
       });
 
-      // Filtrar productos no comprados y actualizar el carrito
-      const updatedCart = await cartRepository.updateCart(cid, {
-        products: purchaseResult.remainingProducts,
-      });
+      // Actualizar el carrito con los productos no comprados
+      await cartRepository.updateCart(cid, { products: purchaseResult.remainingProducts });
 
       return res.status(200).json({
         message: "Compra realizada con éxito",
         ticket: newTicket,
-        remainingProducts: updatedCart.products,
+        remainingProducts: purchaseResult.remainingProducts,
       });
     }
 
-    return res.status(400).json({ message: "No hay stock suficiente para la compra", remainingProducts: purchaseResult.remainingProducts });
+    return res.status(400).json({
+      message: "No hay stock suficiente para la compra",
+      remainingProducts: purchaseResult.remainingProducts,
+    });
 
   } catch (error) {
+    console.error("❌ Error en la compra:", error);
     res.status(500).json({ message: "Error al procesar la compra", error });
   }
 };

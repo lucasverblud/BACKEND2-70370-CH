@@ -3,17 +3,15 @@ export default class CartRepository {
     this.cartDAO = cartDAO;
   }
 
-  async getCartById(id) {
-    return await this.cartDAO.getCartById(id);
+  getCartById(id) {
+    return this.cartDAO.getCartById(id);
   }
 
-  async updateCart(id, newData) {
-    return await this.cartDAO.updateCart(id, newData);
+  updateCart(id, newData) {
+    return this.cartDAO.updateCart(id, newData);
   }
 
-  async purchaseCart(cartId, userEmail) {
-    return await this.cartDAO.purchaseCart(cartId, userEmail);
+  purchaseCart(cartId, userEmail) {
+    return this.cartDAO.purchaseCart(cartId, userEmail);
   }
 }
-
-  

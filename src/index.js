@@ -43,10 +43,15 @@ app.set("views", "./src/views");
 app.use("/", viewRoutes);
 */
 
-// Conectar a la base de datos
-connectDb(process.env.MONGO_URI);
-
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Conectar a la base de datos antes de iniciar el servidor
+connectDb(process.env.MONGO_URI)
+  .then(() => {
+    console.log("✅ Base de datos conectada con éxito");
+    app.listen(PORT, () => {
+      console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("❌ Error al conectar con la base de datos:", error);
+    process.exit(1); // Detiene el servidor si la DB falla
+  });

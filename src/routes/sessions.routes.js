@@ -7,25 +7,37 @@ const router = express.Router();
 
 // Ruta para login
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  const user = await userModel.findOne({ email });
+  try {
+    const { email, password } = req.body;
+    const user = await userModel.findOne({ email }).select("+password");
 
-  if (!user) {
-    return res.status(400).json({ message: "Usuario no encontrado" });
+    if (!user) {
+      return res.status(400).json({ message: "Usuario no encontrado" });
+    }
+
+    // Validación de contraseña
+    if (!isValidPassword(password, user.password)) {
+      return res.status(400).json({ message: "Contraseña incorrecta" });
+    }
+
+    // Generamos el token JWT
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET || "clave-secreta",
+      { expiresIn: "24h" }
+    );
+
+    // Enviar token como cookie HTTP-only
+    res.cookie("authCookie", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    return res.json({ message: "Login exitoso", token });
+  } catch (error) {
+    console.error("❌ Error en el login:", error);
+    res.status(500).json({ message: "Error en el servidor", error });
   }
-
-  // Compara la contraseña ingresada con el hash almacenado
-  //if (!isValidPassword(password, user.password)) {
-  //  console.log("Contraseña ingresada:", password);
-  //  console.log("Contraseña almacenada (hash):", user.password);
-  //  return res.status(400).json({ message: "Contraseña incorrecta" });
-  //}
-
-  // Generamos el token si la contraseña es correcta
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || "clave-secreta", { expiresIn: "24h" });
-
-  res.cookie("authCookie", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
-  return res.json({ message: "Login exitoso", token });
 });
 
 // Ruta para logout
@@ -35,4 +47,3 @@ router.post("/logout", (req, res) => {
 });
 
 export default router;
-

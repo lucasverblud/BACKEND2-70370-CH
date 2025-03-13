@@ -3,7 +3,7 @@ import productModel from "./models/product.model.js";
 
 export default class CartDAO {
   async getCartById(id) {
-    return await cartModel.findById(id).populate("products.product").lean(); // 🔥 Agregamos .lean()
+    return await cartModel.findById(id).populate("products.product").lean();
   }
 
   async updateCart(id, newData) {

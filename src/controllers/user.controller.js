@@ -9,7 +9,7 @@ export const getUserById = async (req, res) => {
     const user = await userRepository.getUserById(req.params.id);
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
-    const userDTO = new UserDTO(user); // Aplicamos DTO para evitar enviar `password`
+    const userDTO = new UserDTO(user);
     res.json(userDTO);
   } catch (error) {
     console.error("❌ Error al obtener usuario:", error);

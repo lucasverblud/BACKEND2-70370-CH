@@ -10,7 +10,7 @@ const ticketRepository = new TicketRepository(new TicketDAO());
 export const purchaseCart = async (req, res) => {
   try {
     const { cid } = req.params;
-    const userEmail = req.user?.email; // Aseguramos que `req.user` esté definido
+    const userEmail = req.user?.email; 
 
     if (!userEmail) {
       return res.status(401).json({ message: "Usuario no autenticado" });

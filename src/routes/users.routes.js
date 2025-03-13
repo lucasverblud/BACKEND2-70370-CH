@@ -28,7 +28,7 @@ router.post("/register", async (req, res) => {
     const newUser = await userRepository.createUser({
       first_name,
       last_name,
-      email: email.toLowerCase(), // Asegurar que se guarde en minúsculas
+      email: email.toLowerCase(),
       age,
       password: hashPassword(password),
       role: role || "user",
@@ -48,7 +48,7 @@ router.get(
   async (req, res) => {
     if (!req.user) return res.status(401).json({ message: "No autorizado" });
 
-    const userDTO = new UserDTO(req.user); // Aplicamos el DTO
+    const userDTO = new UserDTO(req.user);
     res.json(userDTO);
   }
 );

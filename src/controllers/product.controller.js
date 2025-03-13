@@ -1,14 +1,13 @@
 import ProductRepository from "../repositories/product.repository.js";
 import ProductDAO from "../daos/product.dao.js";
 
-const productRepository = new ProductDAO(); // Instancia del DAO
+const productRepository = new ProductDAO(); 
 
 // Crear un producto (Solo Admin)
 export const createProduct = async (req, res) => {
   try {
     const { name, price, stock } = req.body;
 
-    // Validaciones básicas
     if (!name || price == null || stock == null) {
       return res.status(400).json({ message: "Todos los campos son obligatorios: name, price, stock" });
     }

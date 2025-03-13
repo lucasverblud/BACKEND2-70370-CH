@@ -9,11 +9,11 @@ const UserSchema = new Schema(
       type: String, 
       required: true, 
       unique: true, 
-      lowercase: true, // Convierte el email a minúsculas para evitar duplicados por mayúsculas
+      lowercase: true,
       match: [/^\S+@\S+\.\S+$/, "Por favor ingresa un email válido"],
     },
     age: { type: Number, required: true },
-    password: { type: String, required: true, select: false }, // Oculta la contraseña en queries por defecto
+    password: { type: String, required: true, select: false },
     cart: { type: Schema.Types.ObjectId, ref: "Cart" },
     role: { type: String, default: "user" },
   },

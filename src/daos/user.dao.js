@@ -2,11 +2,11 @@ import userModel from "./models/user.model.js";
 
 export default class UserDAO {
   async getUserById(id) {
-    return await userModel.findById(id).select("-password"); // 🔹 Evita devolver la contraseña por defecto
+    return await userModel.findById(id).select("-password");
   }
 
   async getUserByEmail(email) {
-    return await userModel.findOne({ email }).select("+password"); // 🔹 Necesario para autenticación
+    return await userModel.findOne({ email }).select("+password");
   }
 
   async createUser(userData) {

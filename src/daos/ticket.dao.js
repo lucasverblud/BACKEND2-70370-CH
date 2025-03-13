@@ -10,6 +10,6 @@ export default class TicketDAO {
   }
 
   async getAllTickets() {
-    return await ticketModel.find().sort({ purchase_datetime: -1 }); // 🔹 Ordena por fecha (últimos primeros)
+    return await ticketModel.find().sort({ purchase_datetime: -1 });
   }
 }

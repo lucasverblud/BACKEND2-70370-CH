@@ -3,7 +3,7 @@ import productModel from "./models/product.model.js";
 
 export default class CartDAO {
   async getCartById(id) {
-    return await cartModel.findById(id).populate("products.product");
+    return await cartModel.findById(id).populate("products.product").lean(); // 🔥 Agregamos .lean()
   }
 
   async updateCart(id, newData) {
@@ -35,7 +35,6 @@ export default class CartDAO {
         }
       }
 
-      // Generar ticket si se compró al menos un producto
       if (totalAmount > 0) {
         return {
           success: true,

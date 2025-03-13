@@ -1,25 +1,25 @@
 import express from "express";
-import { authorizeRole } from "../middlewares/auth.middleware.js";
 import passport from "passport";
+import { authorizeRole } from "../middlewares/auth.middleware.js";
+import { createProduct, deleteProduct } from "../controllers/product.controller.js";
 
 const router = express.Router();
 
-// Ejemplo: Crear un producto (Solo Admin)
-router.post("/", 
+// Crear un producto (Solo Admin)
+router.post(
+  "/", 
   passport.authenticate("current", { session: false }), 
   authorizeRole("admin"), 
-  (req, res) => {
-    res.json({ message: "Producto creado con éxito" });
-  }
+  createProduct
 );
 
-// Ejemplo: Eliminar un producto (Solo Admin)
-router.delete("/:pid", 
+// Eliminar un producto (Solo Admin)
+router.delete(
+  "/:pid", 
   passport.authenticate("current", { session: false }), 
   authorizeRole("admin"), 
-  (req, res) => {
-    res.json({ message: "Producto eliminado con éxito" });
-  }
+  deleteProduct
 );
 
 export default router;
+

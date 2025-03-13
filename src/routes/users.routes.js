@@ -13,13 +13,13 @@ router.post("/register", async (req, res) => {
   const { first_name, last_name, email, age, password, role } = req.body;
 
   try {
-    // Validar email
+    // Validar email en el backend
     if (!/^\S+@\S+\.\S+$/.test(email)) {
       return res.status(400).json({ message: "Por favor ingresa un email válido" });
     }
 
     // Verificar si el usuario ya existe
-    const existingUser = await userRepository.getUserByEmail(email);
+    const existingUser = await userRepository.getUserByEmail(email.toLowerCase());
     if (existingUser) {
       return res.status(400).json({ message: "El email ya está registrado" });
     }
@@ -28,7 +28,7 @@ router.post("/register", async (req, res) => {
     const newUser = await userRepository.createUser({
       first_name,
       last_name,
-      email,
+      email: email.toLowerCase(), // Asegurar que se guarde en minúsculas
       age,
       password: hashPassword(password),
       role: role || "user",
@@ -36,7 +36,7 @@ router.post("/register", async (req, res) => {
 
     res.status(201).json({ message: "Usuario creado exitosamente", user: { email: newUser.email } });
   } catch (error) {
-    console.error(error);
+    console.error("❌ Error al registrar usuario:", error);
     res.status(500).json({ message: "Error al registrar el usuario" });
   }
 });
